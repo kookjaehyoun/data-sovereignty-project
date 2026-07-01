@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>데이터 주권 프로젝트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: #333;
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        .nav-logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border: none;
+            background: none;
+            font-size: 14px;
+        }
+
+        .nav-link:hover {
+            background-color: #555;
+        }
+
+        .nav-link.active {
+            background-color: #007bff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Case List */
+        .case-list h1 {
+            margin-bottom: 20px;
+            color: #222;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .cases {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .case-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .case-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .case-card h3 {
+            margin-bottom: 10px;
+            color: #222;
+        }
+
+        .case-card p {
+            margin: 10px 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .case-card .btn {
+            margin-top: 10px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status.pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status.approved {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status.rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Case Detail */
+        .case-detail {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .case-detail h1 {
+            margin-bottom: 20px;
+            color: #222;
+        }
+
+        .case-meta {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .case-meta p {
+            margin: 10px 0;
+        }
+
+        .case-description {
+            margin-top: 30px;
+        }
+
+        .case-description h2 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        /* Form Styles */
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container h1 {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Admin Dashboard */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .reports-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .reports-section h2 {
+            margin-bottom: 20px;
+        }
+
+        .reports-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        .reports-table th {
+            background-color: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .reports-table td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .reports-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .reports-table select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .back-btn {
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .cases {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-menu {
+                gap: 15px;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .reports-table {
+                font-size: 12px;
+            }
+
+            .reports-table th,
+            .reports-table td {
+                padding: 8px;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo" onclick="switchPage('cases')">📊 데이터 주권</div>
+            <ul class="nav-menu">
+                <li><button class="nav-link" onclick="switchPage('cases')">사례</button></li>
+                <li><button class="nav-link" onclick="switchPage('submit')">제보</button></li>
+                <li><button class="nav-link" onclick="switchPage('admin')">관리자</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Case List Page -->
+        <div id="cases" class="page active">
+            <div class="case-list">
+                <h1>📋 데이터 주권 침해 사례</h1>
+                <button class="btn btn-primary" onclick="switchPage('submit')">새 제보 제출</button>
+                <div class="cases" id="casesList"></div>
+            </div>
+        </div>
+
+        <!-- Case Detail Page -->
+        <div id="caseDetail" class="page">
+            <button class="btn btn-secondary back-btn" onclick="switchPage('cases')">← 돌아가기</button>
+            <div class="case-detail" id="caseDetailContent"></div>
+        </div>
+
+        <!-- Submit Report Page -->
+        <div id="submit" class="page">
+            <div class="form-container">
+                <h1>📝 새 제보 제출</h1>
+                <div id="submitMessage"></div>
+                <form id="submitForm">
+                    <div class="form-group">
+                        <label>사례ID (선택)</label>
+                        <input type="text" name="case_id" placeholder="기존 사례에 추가할 경우">
+                    </div>
+                    <div class="form-group">
+                        <label>이름 (선택)</label>
+                        <input type="text" name="reporter_name" placeholder="이름을 입력하세요 (익명 가능)">
+                    </div>
+                    <div class="form-group">
+                        <label>이메일 (선택)</label>
+                        <input type="email" name="reporter_email" placeholder="이메일을 입력하세요">
+                    </div>
+                    <div class="form-group">
+                        <label>제보 내용 *</label>
+                        <textarea name="description" placeholder="데이터 침해 내용을 자세히 설명해주세요" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>증거 (선택)</label>
+                        <textarea name="evidence" placeholder="증거자료나 추가 정보를 입력하세요"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">제보 제출</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Admin Login Page -->
+        <div id="admin" class="page">
+            <div class="form-container" id="adminLoginForm" style="display: block;">
+                <h1>🔐 관리자 로그인</h1>
+                <div id="loginMessage"></div>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label>사용자명</label>
+                        <input type="text" name="username" placeholder="사용자명을 입력하세요" required>
+                    </div>
+                    <div class="form-group">
+                        <label>비밀번호</label>
+                        <input type="password" name="password" placeholder="비밀번호를 입력하세요" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">로그인</button>
+                </form>
+                <p style="margin-top: 20px; color: #666; font-size: 12px;">
+                    📌 테스트 계정: admin / admin123
+                </p>
+            </div>
+
+            <div id="adminDashboard" style="display: none;">
+                <div class="dashboard-header">
+                    <h1>📊 관리자 대시보드</h1>
+                    <button class="btn btn-secondary" onclick="logout()">로그아웃</button>
+                </div>
+
+                <div class="stats-section" id="statsSection"></div>
+
+                <div class="reports-section">
+                    <h2>모든 제보</h2>
+                    <div id="reportsTableContainer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Management
+        const dataManager = {
+            getCases() {
+                const cases = localStorage.getItem('cases');
+                if (!cases) {
+                    const defaultCases = [
+                        {
+                            id: 1,
+                            title: '안면인식 기술 부당 사용',
+                            description: '소수 민족 커뮤니티에 대한 무단 얼굴 데이터 수집',
+                            category: '안면인식',
+                            reported_by: '익명',
+                            reported_date: new Date().toISOString(),
+                            status: 'pending'
+                        },
+                        {
+                            id: 2,
+                            title: '이동 경로 데이터 무단 판매',
+                            description: '앱 사용자의 이동 경로가 제3자에게 판매됨',
+                            category: '위치 추적',
+                            reported_by: '익명',
+                            reported_date: new Date().toISOString(),
+                            status: 'pending'
+                        }
+                    ];
+                    localStorage.setItem('cases', JSON.stringify(defaultCases));
+                    return defaultCases;
+                }
+                return JSON.parse(cases);
+            },
+
+            getReports() {
+                const reports = localStorage.getItem('reports');
+                return reports ? JSON.parse(reports) : [];
+            },
+
+            addReport(report) {
+                const reports = this.getReports();
+                report.id = Date.now();
+                report.status = 'pending';
+                report.created_at = new Date().toISOString();
+                reports.push(report);
+                localStorage.setItem('reports', JSON.stringify(reports));
+                return report;
+            },
+
+            updateReportStatus(reportId, status) {
+                const reports = this.getReports();
+                const report = reports.find(r => r.id == reportId);
+                if (report) {
+                    report.status = status;
+                    localStorage.setItem('reports', JSON.stringify(reports));
+                }
+            },
+
+            deleteReport(reportId) {
+                let reports = this.getReports();
+                reports = reports.filter(r => r.id != reportId);
+                localStorage.setItem('reports', JSON.stringify(reports));
+            },
+
+            getStats() {
+                const cases = this.getCases();
+                const reports = this.getReports();
+                return {
+                    total_cases: cases.length,
+                    total_reports: reports.length,
+                    pending_reports: reports.filter(r => r.status === 'pending').length
+                };
+            }
+        };
+
+        // Page Navigation
+        function switchPage(pageName) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageName).classList.add('active');
+
+            if (pageName === 'cases') {
+                renderCases();
+            } else if (pageName === 'admin') {
+                const token = localStorage.getItem('admin_token');
+                if (token) {
+                    renderAdminDashboard();
+                } else {
+                    document.getElementById('adminLoginForm').style.display = 'block';
+                    document.getElementById('adminDashboard').style.display = 'none';
+                }
+            }
+        }
+
+        // Render Cases List
+        function renderCases() {
+            const cases = dataManager.getCases();
+            const casesList = document.getElementById('casesList');
+            casesList.innerHTML = cases.map(c => `
+                <div class="case-card">
+                    <h3>${c.title}</h3>
+                    <p>${c.description.substring(0, 100)}...</p>
+                    <p><strong>카테고리:</strong> ${c.category}</p>
+                    <p><strong>상태:</strong> <span class="status ${c.status}">${c.status === 'pending' ? '대기' : '검토중'}</span></p>
+                    <button class="btn btn-secondary" onclick="viewCaseDetail(${c.id})">자세히 보기</button>
+                </div>
+            `).join('');
+        }
+
+        // View Case Detail
+        function viewCaseDetail(caseId) {
+            const cases = dataManager.getCases();
+            const caseData = cases.find(c => c.id === caseId);
+            if (caseData) {
+                document.getElementById('caseDetailContent').innerHTML = `
+                    <h1>${caseData.title}</h1>
+                    <div class="case-meta">
+                        <p><strong>카테고리:</strong> ${caseData.category}</p>
+                        <p><strong>제보자:</strong> ${caseData.reported_by}</p>
+                        <p><strong>제보일:</strong> ${new Date(caseData.reported_date).toLocaleDateString('ko-KR')}</p>
+                        <p><strong>상태:</strong> ${caseData.status}</p>
+                    </div>
+                    <div class="case-description">
+                        <h2>상세 내용</h2>
+                        <p>${caseData.description}</p>
+                    </div>
+                `;
+                switchPage('caseDetail');
+            }
+        }
+
+        // Submit Report Form
+        document.getElementById('submitForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const report = {
+                case_id: formData.get('case_id') || null,
+                reporter_name: formData.get('reporter_name') || '익명',
+                reporter_email: formData.get('reporter_email'),
+                description: formData.get('description'),
+                evidence: formData.get('evidence')
+            };
+
+            dataManager.addReport(report);
+            document.getElementById('submitMessage').innerHTML = '<div class="message">✅ 제보가 성공적으로 제출되었습니다!</div>';
+            this.reset();
+            setTimeout(() => {
+                switchPage('cases');
+            }, 2000);
+        });
+
+        // Admin Login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = this.elements['username'].value;
+            const password = this.elements['password'].value;
+
+            // Simple authentication (for demo)
+            if (username === 'admin' && password === 'admin123') {
+                localStorage.setItem('admin_token', 'demo_token_' + Date.now());
+                document.getElementById('adminLoginForm').style.display = 'none';
+                renderAdminDashboard();
+            } else {
+                document.getElementById('loginMessage').innerHTML = '<div class="error">❌ 사용자명 또는 비밀번호가 틀렸습니다.</div>';
+            }
+        });
+
+        // Render Admin Dashboard
+        function renderAdminDashboard() {
+            const stats = dataManager.getStats();
+            const reports = dataManager.getReports();
+
+            // Render Stats
+            document.getElementById('statsSection').innerHTML = `
+                <div class="stat-card">
+                    <h3>전체 사례</h3>
+                    <p class="stat-number">${stats.total_cases}</p>
+                </div>
+                <div class="stat-card">
+                    <h3>전체 제보</h3>
+                    <p class="stat-number">${stats.total_reports}</p>
+                </div>
+                <div class="stat-card">
+                    <h3>대기 중인 제보</h3>
+                    <p class="stat-number">${stats.pending_reports}</p>
+                </div>
+            `;
+
+            // Render Reports Table
+            const tableHTML = `
+                <table class="reports-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>제보자</th>
+                            <th>내용</th>
+                            <th>상태</th>
+                            <th>날짜</th>
+                            <th>작업</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${reports.length === 0 ? '<tr><td colspan="6" style="text-align:center; padding: 20px;">제보가 없습니다.</td></tr>' : reports.map(r => `
+                            <tr>
+                                <td>${r.id}</td>
+                                <td>${r.reporter_name}</td>
+                                <td>${r.description.substring(0, 30)}...</td>
+                                <td>
+                                    <select onchange="updateStatus(${r.id}, this.value)">
+                                        <option value="pending" ${r.status === 'pending' ? 'selected' : ''}>대기</option>
+                                        <option value="reviewing" ${r.status === 'reviewing' ? 'selected' : ''}>검토 중</option>
+                                        <option value="approved" ${r.status === 'approved' ? 'selected' : ''}>승인</option>
+                                        <option value="rejected" ${r.status === 'rejected' ? 'selected' : ''}>거부</option>
+                                    </select>
+                                </td>
+                                <td>${new Date(r.created_at).toLocaleDateString('ko-KR')}</td>
+                                <td><button class="btn btn-danger" onclick="deleteReport(${r.id})">삭제</button></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('reportsTableContainer').innerHTML = tableHTML;
+            document.getElementById('adminLoginForm').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'block';
+        }
+
+        // Update Report Status
+        function updateStatus(reportId, status) {
+            dataManager.updateReportStatus(reportId, status);
+            renderAdminDashboard();
+        }
+
+        // Delete Report
+        function deleteReport(reportId) {
+            if (confirm('정말로 이 제보를 삭제하시겠습니까?')) {
+                dataManager.deleteReport(reportId);
+                renderAdminDashboard();
+            }
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('admin_token');
+            document.getElementById('adminLoginForm').style.display = 'block';
+            document.getElementById('adminDashboard').style.display = 'none';
+            document.getElementById('loginForm').reset();
+        }
+
+        // Initialize
+        renderCases();
+    </script>
+</body>
+</html>
