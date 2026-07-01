@@ -1,0 +1,11 @@
+.gitignore
+docker-compose.yml
+README.md
+.env.example
+backend/
+frontend/
+node_modules/
+.DS_Store
+.env
+dist/
+build/
